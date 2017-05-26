@@ -1,0 +1,12 @@
+[package]
+name = "rust_nn"
+version = "0.1.0"
+authors = ["Victor Koenders <victor.koenders@gmail.com>"]
+
+[dependencies]
+rand = "*"
+
+[dependencies.sdl2]
+version = "0.30"
+default-features = false
+features = ["ttf","image","gfx"]
