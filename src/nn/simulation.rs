@@ -72,7 +72,7 @@ impl Simulation {
             }
 
             network.run(&values);
-            let ref last_layer = network.network.layers[network.network.layers.len() - 1].nodes;
+            let last_layer = &network.network.layers[network.network.layers.len() - 1].nodes;
             network.facing += clamp(last_layer[0].value, -1f32, 1f32) / 10f32;
             let distance = clamp(last_layer[1].value, -1f32, 1f32);
             network.x += network.facing.cos() * distance * NODE_SPEED;

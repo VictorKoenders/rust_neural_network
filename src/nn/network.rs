@@ -14,6 +14,8 @@ impl Network {
 
         let mut layers = Vec::with_capacity(layer_count);
         layers.push(Layer::create_amount(input_count));
+
+        // TODO: cleanup
         for i in 0..layer_count - 1 {
             let width = if i == layer_count - 2 {
                 output_count
@@ -33,7 +35,7 @@ impl Network {
                         let second_factor =
                             second.layers[i + 1].nodes[node_index].links[link_index].factor;
 
-                        if first_factor == second_factor {
+                        if (first_factor - second_factor).abs() < ::std::f32::EPSILON {
                             first_factor
                         } else {
                             rng.gen_range(first_factor.min(second_factor),
