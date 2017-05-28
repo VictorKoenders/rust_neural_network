@@ -5,6 +5,7 @@ authors = ["Victor Koenders <victor.koenders@gmail.com>"]
 
 [dependencies]
 rand = "*"
+itertools = "*"
 
 [dependencies.sdl2]
 version = "0.30"
