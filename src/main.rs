@@ -1,8 +1,7 @@
-#![feature(step_by)]
-
 extern crate itertools;
 extern crate sdl2;
 extern crate rand;
+extern crate rust_nn;
 
 use sdl2::pixels::{Color, PixelFormatEnum};
 use sdl2::gfx::primitives::DrawRenderer;
@@ -10,13 +9,11 @@ use sdl2::keyboard::Keycode;
 use sdl2::event::Event;
 use sdl2::rect::Rect;
 
-mod nn;
-
 pub fn main() {
     let sdl_context = sdl2::init().unwrap();
     let video_subsystem = sdl_context.video().unwrap();
     let mut rng = rand::thread_rng();
-    let mut simulation = nn::simulation::Simulation::new(&mut rng);
+    let mut simulation = rust_nn::simulation::Simulation::new(&mut rng);
 
     let window = video_subsystem.window("Mouse", 800, 600)
         .position_centered()
@@ -51,7 +48,7 @@ pub fn main() {
                 Event::KeyDown { keycode: Some(Keycode::Escape), .. } |
                 Event::Quit { .. } => break 'running,
                 Event::KeyDown { keycode: Some(Keycode::Space), .. } => {
-                    simulation = nn::simulation::Simulation::new(&mut rng)
+                    simulation = rust_nn::simulation::Simulation::new(&mut rng)
                 }
                 _ => {}
             }

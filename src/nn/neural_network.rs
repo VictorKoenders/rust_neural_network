@@ -91,7 +91,7 @@ impl NeuralNetwork {
             let mut sources = sources.iter();
             for i in (3..(INPUT_NODE_COUNT - 1)).step_by(2) {
                 if let Some(source) = sources.next() {
-                    let mut angle = facing - (source.1 - self.y).atan2(source.0 - self.x);
+                    let mut angle = (source.1 - self.y).atan2(source.0 - self.x) - facing;
                     while angle < -::std::f32::consts::PI {
                         angle += 2f32 * ::std::f32::consts::PI;
                     }
@@ -152,10 +152,21 @@ impl NeuralNetwork {
             for node in &mut layer.nodes {
                 let mut value = 0f32;
                 for link in &mut node.links {
-                    value += link.factor * unsafe { (*link.node).value };
+                    value += clamp(link.factor * unsafe { (*link.node).value }, -1f32, 1f32);
                 }
                 node.value = value;
             }
         }
     }
 }
+
+fn clamp(value: f32, min: f32, max: f32) -> f32 {
+    if value > max {
+        max
+    } else if value < min {
+        min
+    } else {
+        value
+    }
+}
+

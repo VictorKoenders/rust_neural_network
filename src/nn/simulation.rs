@@ -13,6 +13,7 @@ pub const LAYER_WIDTH: usize = 20;
 pub const LAYER_COUNT: usize = 3;
 pub const OUTPUT_NODES: usize = 2;
 pub const NODE_SPEED: f32 = 1f32;
+pub const INITIAL_POWER_AMOUNT: u32 = 1000;
 
 impl Simulation {
     pub fn new(rng: &mut ThreadRng) -> Simulation {
@@ -30,7 +31,7 @@ impl Simulation {
             generation: 0,
             networks: networks,
             energy_nodes: (0..15)
-                .map(|_| (rng.gen_range(0f32, 800f32), rng.gen_range(0f32, 600f32), 100))
+                .map(|_| (rng.gen_range(0f32, 800f32), rng.gen_range(0f32, 600f32), INITIAL_POWER_AMOUNT))
                 .collect(),
         }
     }
@@ -50,12 +51,21 @@ impl Simulation {
             if let Some(power) = self.energy_nodes
                 .iter_mut()
                 .find(|n| network.in_range_of(&(n.0, n.1)) && n.2 > 0) {
-                network.energy += 1;
-                power.2 -= 1;
+                if power.2 >= 5 {
+                    network.energy += 5;
+                    power.2 -= 5;
+                } else {
+                    network.energy += power.2;
+                    power.2 = 0;
+                }
                 network.is_charging = true;
             } else {
                 network.is_charging = false;
-                network.energy -= 1;
+                if network.energy > 2 {
+                    network.energy -= 2;
+                } else {
+                    network.energy = 0;
+                }
             }
         }
 
@@ -88,10 +98,16 @@ impl Simulation {
             self.next_id += 1;
         }
 
+        for node in &mut self.energy_nodes {
+            if node.2 > 0 {
+                node.2 -= 1;
+            }
+        }
+
         self.energy_nodes.retain(|n| n.2 > 0);
 
         if self.energy_nodes.len() < 15 {
-            self.energy_nodes.push((rng.gen_range(0f32, 800f32), rng.gen_range(0f32, 600f32), 100));
+            self.energy_nodes.push((rng.gen_range(0f32, 800f32), rng.gen_range(0f32, 600f32), INITIAL_POWER_AMOUNT));
         }
     }
 }
