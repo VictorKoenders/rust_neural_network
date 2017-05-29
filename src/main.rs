@@ -1,3 +1,5 @@
+#![feature(step_by)]
+
 extern crate itertools;
 extern crate sdl2;
 extern crate rand;

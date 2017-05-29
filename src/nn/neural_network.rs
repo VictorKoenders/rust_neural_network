@@ -1,5 +1,7 @@
+use super::simulation::INPUT_NODE_COUNT;
 use super::network::Network;
 use rand::{ThreadRng, Rng};
+use itertools::Itertools;
 use super::layer::Layer;
 
 pub struct NeuralNetwork {
@@ -58,6 +60,54 @@ impl NeuralNetwork {
             energy: 1000,
             is_charging: false,
         }
+    }
+
+    pub fn generate_first_layer_values(&self, energy_nodes: &[(f32, f32, u32)]) -> [f32;INPUT_NODE_COUNT] {
+        let (x, y) = (self.x, self.y);
+        let x = ((x + 25f32) / 425f32) - 1f32;
+        let y = ((y + 25f32) / 325f32) - 1f32;
+
+        let charging = if self.is_charging { 1f32 } else { -1f32 };
+        let mut values = [0f32; INPUT_NODE_COUNT];
+        values[0] = x;
+        values[1] = y;
+        values[2] = charging;
+        let mut facing = self.facing;
+        while facing < -::std::f32::consts::PI {
+            facing += 2f32 * ::std::f32::consts::PI;
+        }
+        while facing > ::std::f32::consts::PI {
+            facing -= 2f32 * ::std::f32::consts::PI;
+        }
+        values[3] = facing / ::std::f32::consts::PI / 2f32;
+
+        {
+            let sources = energy_nodes.iter();
+            let sources = sources.sorted_by(|&&(ax, ay, _), &&(bx, by, _)| {
+                self.distance_to_point(&(ax, ay))
+                    .partial_cmp(&self.distance_to_point(&(bx, by)))
+                    .unwrap_or(::std::cmp::Ordering::Equal)
+            });
+            let mut sources = sources.iter();
+            for i in (3..(INPUT_NODE_COUNT - 1)).step_by(2) {
+                if let Some(source) = sources.next() {
+                    let mut angle = facing - (source.1 - self.y).atan2(source.0 - self.x);
+                    while angle < -::std::f32::consts::PI {
+                        angle += 2f32 * ::std::f32::consts::PI;
+                    }
+                    while angle > ::std::f32::consts::PI {
+                        angle -= 2f32 * ::std::f32::consts::PI;
+                    }
+                    let distance = self.distance_to_point(&(source.0, source.1)) / (800f32 * 600f32 / 1.5f32) - 1f32;
+                    values[i] = angle / ::std::f32::consts::PI;
+                    values[i + 1] = distance;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        values
     }
 
     pub fn distance_to(&self, other: &NeuralNetwork) -> f32 {

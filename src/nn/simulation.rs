@@ -1,6 +1,5 @@
 use super::neural_network::NeuralNetwork;
 use rand::{ThreadRng, Rng};
-use itertools::Itertools;
 
 pub struct Simulation {
     pub generation: u32,
@@ -9,11 +8,11 @@ pub struct Simulation {
     pub energy_nodes: Vec<(f32, f32, u32)>,
 }
 
-const INPUT_NODE_COUNT: usize = 10;
-const LAYER_WIDTH: usize = 20;
-const LAYER_COUNT: usize = 3;
-const OUTPUT_NODES: usize = 2;
-const NODE_SPEED: f32 = 1f32;
+pub const INPUT_NODE_COUNT: usize = 10;
+pub const LAYER_WIDTH: usize = 20;
+pub const LAYER_COUNT: usize = 3;
+pub const OUTPUT_NODES: usize = 2;
+pub const NODE_SPEED: f32 = 1f32;
 
 impl Simulation {
     pub fn new(rng: &mut ThreadRng) -> Simulation {
@@ -38,38 +37,7 @@ impl Simulation {
 
     pub fn update(&mut self, rng: &mut ThreadRng) {
         for network in &mut self.networks {
-            let (x, y) = (network.x, network.y);
-            let x = ((x + 25f32) / 450f32) - 1f32;
-            let y = ((y + 25f32) / 350f32) - 1f32;
-
-            let charging = if network.is_charging { 1f32 } else { -1f32 };
-            let mut values = [0f32; INPUT_NODE_COUNT];
-            values[0] = x;
-            values[1] = y;
-            values[2] = charging;
-
-            {
-                let source_slice: &_ = &self.energy_nodes[..];
-                let sources = source_slice.iter();
-                let sources = sources.sorted_by(|&&(ax, ay, _), &&(bx, by, _)| {
-                    network.distance_to_point(&(ax, ay))
-                        .partial_cmp(&network.distance_to_point(&(bx, by)))
-                        .unwrap_or(::std::cmp::Ordering::Equal)
-                });
-                let mut sources = sources.iter();
-                for mut i in 3..(INPUT_NODE_COUNT - 1) {
-                    if let Some(source) = sources.next() {
-                        let angle = (source.0 - x).atan2(source.1 - y);
-                        let value = network.distance_to_point(&(source.0, source.1)) / 1000f32 -
-                                    1f32;
-                        values[i] = angle;
-                        i += 1;
-                        values[i] = value;
-                    } else {
-                        break;
-                    }
-                }
-            }
+            let values = network.generate_first_layer_values(&self.energy_nodes[..]);
 
             network.run(&values);
             let last_layer = &network.network.layers[network.network.layers.len() - 1].nodes;
