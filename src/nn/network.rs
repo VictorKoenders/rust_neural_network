@@ -1,28 +1,27 @@
-use rand::{ThreadRng, Rng};
+use rand::Rng;
 use super::layer::Layer;
+use {LAYER_DEPTH, LAYER_WIDTH, INPUT_NODE_COUNT};
 
+#[derive(Default)]
 pub struct Network {
-    pub layers: Vec<Layer>,
+    pub layers: [Layer; LAYER_DEPTH],
 }
 
 impl Network {
-    pub fn merge(rng: &mut ThreadRng, first: &Network, second: &Network) -> Network {
-        let layer_count = first.layers.len();
-        let input_count = first.layers[0].nodes.len();
-        let layer_width = first.layers[1].nodes.len();
-        let output_count = first.layers[layer_count - 1].nodes.len();
+    pub fn initialize(&mut self, rng: &mut Rng) {
 
-        let mut layers = Vec::with_capacity(layer_count);
-        layers.push(Layer::create_amount(input_count));
+    }
+    pub fn merge(rng: &mut Rng, first: &Network, second: &Network) -> Self {
+        let mut layers: [Layer; LAYER_DEPTH] = unsafe { ::core::mem::uninitialized() };
+        for layer in &mut layers {
+            *layer = Layer::default();
+        }
+        /*
+        layers[0] = Layer::create_amount(INPUT_NODE_COUNT);
 
         // TODO: cleanup
-        for i in 0..layer_count - 1 {
-            let width = if i == layer_count - 2 {
-                output_count
-            } else {
-                layer_width
-            };
-            let mut layer = Layer::create_amount_with_previous(width, &layers[i]);
+        for i in 0..LAYER_DEPTH {
+            let mut layer = Layer::create_amount_with_previous(LAYER_WIDTH, &layers[i]);
 
             for node_index in 0..layer.nodes.len() {
                 for link_index in 0..layer.nodes[node_index].links.len() {
@@ -35,7 +34,7 @@ impl Network {
                         let second_factor =
                             second.layers[i + 1].nodes[node_index].links[link_index].factor;
 
-                        if (first_factor - second_factor).abs() < ::std::f32::EPSILON {
+                        if (first_factor - second_factor).abs() < ::core::f32::EPSILON {
                             first_factor
                         } else {
                             rng.gen_range(first_factor.min(second_factor),
@@ -46,6 +45,7 @@ impl Network {
             }
             layers.push(layer);
         }
+        */
 
         Network { layers: layers }
     }

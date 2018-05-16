@@ -1,4 +1,3 @@
-extern crate itertools;
 extern crate sdl2;
 extern crate rand;
 extern crate rust_nn;
@@ -54,6 +53,7 @@ pub fn main() {
             }
         }
 
+        /*
         simulation.update(&mut rng);
 
         canvas.set_draw_color(Color::RGB(0, 0, 0));
@@ -77,6 +77,7 @@ pub fn main() {
             canvas.set_draw_color(Color::RGB(255, 255, 255));
             canvas.draw_line(start, end).unwrap();
         }
+        */
 
         canvas.present();
     }

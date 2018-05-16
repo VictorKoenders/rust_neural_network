@@ -1,25 +1,22 @@
-use rand::{ThreadRng, Rng};
+use rand::Rng;
 use super::node::Node;
-use super::link::Link;
+use LAYER_WIDTH;
 
+#[derive(Default)]
 pub struct Layer {
-    pub nodes: Vec<Node>,
+    pub nodes: [Node; LAYER_WIDTH],
 }
 
 impl Layer {
-    pub fn create_amount(amount: usize) -> Layer {
-        let mut layer = Layer { nodes: Vec::with_capacity(amount) };
-        for _ in 0..amount {
-            layer.nodes.push(Node {
-                value: 0f32,
-                links: Vec::new(),
-            });
-        }
-        layer
+    pub fn create_amount(amount: usize) -> Self {
+        unimplemented!();
+        // let mut layer = Layer { nodes: [Node::default(); amount] };
+        // layer
     }
 
     pub fn create_amount_with_previous(amount: usize, previous: &Layer) -> Layer {
-        let mut layer = Layer { nodes: Vec::with_capacity(amount) };
+        unimplemented!();
+        /*let mut layer = Layer { nodes: [Node::default(); amount] };
         for _ in 0..amount {
             let mut node = Node {
                 value: 0f32,
@@ -35,13 +32,15 @@ impl Layer {
 
             layer.nodes.push(node);
         }
-        layer
+        layer*/
     }
 
-    pub fn create_amount_with_previous_and_values(rng: &mut ThreadRng,
+    pub fn create_amount_with_previous_and_values(rng: &mut Rng,
                                                   amount: usize,
                                                   previous: &Layer)
                                                   -> Layer {
+        unimplemented!();
+        /*
         let mut layer = Layer { nodes: Vec::with_capacity(amount) };
         for _ in 0..amount {
             let mut node = Node {
@@ -58,6 +57,6 @@ impl Layer {
 
             layer.nodes.push(node);
         }
-        layer
+        layer*/
     }
 }

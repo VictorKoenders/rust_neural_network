@@ -4,8 +4,12 @@ version = "0.1.0"
 authors = ["Victor Koenders <victor.koenders@gmail.com>"]
 
 [dependencies]
-rand = "*"
 itertools = "*"
+
+[dependencies.rand]
+version = "*"
+default-features = false
+features = []
 
 [dependencies.sdl2]
 version = "0.30"
